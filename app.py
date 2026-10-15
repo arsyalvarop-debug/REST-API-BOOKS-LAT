@@ -21,6 +21,23 @@ def get_books():
     return {"data": [dict(book) for book in books]}
 
 
+@app.route("/api/books/<int:book_id>", methods=["GET"])
+def get_book_detail(book_id):
+    connection = get_connection()
+
+    book = connection.execute(
+        "SELECT * FROM books WHERE id = ?", (book_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if book is None:
+        return {"error": "Buku tidak ditemukan"}, 404
+
+    return {"data": dict(book)}, 200
+
+
+
 @app.route("/api/books", methods=["POST"])
 def add_book():
     data = request.get_json()
